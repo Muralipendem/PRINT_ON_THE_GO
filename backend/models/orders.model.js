@@ -5,11 +5,10 @@ const orderSchema = new mongoose.Schema({
         ref: 'Student',
         required: true
     },
-    pdfId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'PDF',
+    pdfId: [{
+        type: String, // Array of URLs as strings
         required: true
-    },
+    }],
     orderDate: {
         type: Date,
         default: Date.now

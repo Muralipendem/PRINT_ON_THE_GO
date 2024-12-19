@@ -41,44 +41,7 @@ export const getUserByname = async (req, res) => {
 	}
 };
 
-//  posting an order to the database
 export const postOrder = async (req, res) => {
-// 	const mongoose = require('mongoose');
-
-// const orderSchema = new mongoose.Schema({
-//     userId: {
-//         type: mongoose.Schema.Types.ObjectId,
-//         ref: 'Student',
-//         required: true
-//     },
-//     pdfId: {
-//         type: mongoose.Schema.Types.ObjectId,
-//         ref: 'PDF',
-//         required: true
-//     },
-//     orderDate: {
-//         type: Date,
-//         default: Date.now
-//     },
-//     status: {
-//         type: String,
-//         enum: ['pending', 'completed', 'cancelled'],
-//         default: 'pending'
-//     },
-//     quantity: {
-//         type: Number,
-//         required: true
-//     },
-//     shopId: {
-//         type: mongoose.Schema.Types.ObjectId,
-//         ref: 'Shop',
-//         required: true
-//     }
-// });
-
-// const Order = mongoose.model('Order', orderSchema);
-
-// module.exports = Order; this is the schema for the order model
 	try {
 		const { pdfId, quantity, shopId } = req.body;
 		const userId = req.user._id;
@@ -98,5 +61,20 @@ export const postOrder = async (req, res) => {
 		res.status(500).json({ error: "Internal server error" });
 	}
 };
+
+export const getOrders = async (req, res) => {
+	try {
+		const orders = await Order.find()
+			.populate('userId', 'username email')  // Populating user details
+			.populate('file', 'title')            // Populating PDF details
+			.populate('shopId', 'name');           // Populating shop details
+
+		res.status(200).json(orders);
+	} catch (error) {
+		console.error("Error in getOrders: ", error.message);
+		res.status(500).json({ error: "Internal server error" });
+	}
+};
+
 
 

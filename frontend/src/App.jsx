@@ -6,11 +6,14 @@ import SignUp from "./pages/signup/SignUp";
 import { Toaster } from "react-hot-toast";
 import { useAuthContext } from "./context/AuthContext";
 import MapComponent from "./pages/home/map";
+import { Orders } from "./pages/home/orders";
+import MaplibreUe from "./pages/home/map";
+import MaplibreComponent from "./pages/home/map";
 
 function App() {
   const { authUser } = useAuthContext();
   return (
-    <div className="md:p-4 lg:p-4  h-screen flex items-center justify-center">
+    <div className="  h-screen flex items-center justify-center">
       <Routes>
         <Route
           path="/"
@@ -35,7 +38,11 @@ function App() {
         />
         <Route
           path="/map"
-          element={authUser ? <MapComponent /> :<Navigate to="/" />}
+          element={authUser ? <MaplibreComponent /> :<Navigate to="/" />}
+        />
+        <Route
+          path="/orders"
+          element={authUser ? <Orders /> :<Navigate to="/" />}
         />
       </Routes>
       <Toaster />

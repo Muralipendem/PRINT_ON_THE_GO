@@ -148,14 +148,11 @@ const MapComponent = () => {
   }, [radius]);
 
   return (
-    <div className="p-6">
-      <h3 className="text-2xl font-bold text-center text-blue-600 mb-4">
-        Nearby Locations with Range Filter
-      </h3>
+    <div className=" w-full h-full">
       <div
         id="map"
         ref={mapRef}
-        className="w-full h-96 sm:h-[70vh] rounded-lg shadow-lg"
+        className="w-full h-full rounded-lg shadow-lg"
       ></div>
       <div className="mt-6 flex flex-col sm:flex-row justify-center items-center gap-4">
         <label className="text-lg font-medium text-gray-700">
