@@ -7,12 +7,17 @@ import useSendMessage from "../../hooks/useSendMessage";
 import { storage } from "../../firebase";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { v4 } from "uuid";
+import { use } from "react";
+import useConversation from "../../zustand/useConversation";
+import { useAuthContext } from "../../context/AuthContext";
 
 const MessageInput = () => {
   const [message, setMessage] = useState("");
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showPopup, setShowPopup] = useState(false);
+  const {selectedConversation} = useConversation();
+  const { authUser } = useAuthContext();
   const [printOptions, setPrintOptions] = useState({
     paperSize: "A4",
     copies: 1,
@@ -91,12 +96,37 @@ const MessageInput = () => {
         }
 
         const result = await response.json();
-        console.log('Files uploaded successfully to the server:', result);
+        console.log('Files uploaded successfully to the server:', result.map((item) => item.file_url));
 
         if (result) {
-            // Send a message indicating files have been uploaded
-            await sendMessage('ThisIsAFileCode' + JSON.stringify(result));
-        }
+          const body = {
+              userId: authUser._id,
+              pdfId: [], // Initialize pdfId as an empty array
+              quantity: 0,
+              shopId: selectedConversation._id,
+          };
+      
+          // Map file URLs to strings and assign to pdfId
+          body.pdfId = result.map((item) => item.file_url.toString());
+      
+          // Set the quantity
+          body.quantity = printOptions.copies;
+          console.log('Order body:', body);
+      
+          // Send a message indicating files have been uploaded
+          await sendMessage('ThisIsAFileCode' + JSON.stringify(result));
+      
+          const response = await fetch('/api/users/order', {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(body), // Ensure body is a JSON string
+          });
+      
+          console.log('Order created successfully:', response);
+      }
+      
     } catch (error) {
         console.error('Error uploading files:', error);
     }
@@ -159,7 +189,7 @@ const MessageInput = () => {
 
       {showPopup && uploadedFiles.length > 0 && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-gray-800 z-auto text-white rounded-lg p-5 w-96">
+          <div className="bg-gray-800 z-50 text-white rounded-lg p-5 w-96">
             <div className="flex justify-between items-center">
               <h3 className="text-lg font-semibold">File Options</h3>
               <button
@@ -256,7 +286,7 @@ const MessageInput = () => {
                 }}
                 className="w-full bg-blue-500 hover:bg-blue-600 text-white rounded-lg py-2"
               >
-                Print
+                Create Print Order
               </button>
             </div>
           </div>
