@@ -16,6 +16,7 @@
     "firebase": "^11.1.0",
     "frontend": "file:",
     "maplibre-gl": "^4.7.1",
+    "PrintOnGo": "file:..",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hot-toast": "^2.4.1",
