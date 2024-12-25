@@ -9,18 +9,19 @@ import MapComponent from "./pages/home/map";
 import { Orders } from "./pages/home/orders";
 import MaplibreUe from "./pages/home/map";
 import MaplibreComponent from "./pages/home/map";
+import Dashboard from "./pages/dashboard/Dashboard";
 
 function App() {
   const { authUser } = useAuthContext();
   return (
-    <div className="  h-screen flex items-center justify-center">
+    <div className="h-screen flex items-center justify-center">
       <Routes>
         <Route
           path="/"
           element={
             authUser ? (
               <>
-                 <Home />
+                 <Dashboard />
                  
               </>
             ) : (
@@ -28,6 +29,7 @@ function App() {
             )
           }
         />
+       
         <Route
           path="/login"
           element={authUser ? <Navigate to="/" /> : <Login />}
@@ -44,6 +46,11 @@ function App() {
           path="/orders"
           element={authUser ? <Orders /> :<Navigate to="/" />}
         />
+         <Route
+          path="/"
+          element={authUser ? <Dashboard /> : <Navigate to="/" />}
+        />
+        <Route path="/chat" element={<Home />} />
       </Routes>
       <Toaster />
     </div>
