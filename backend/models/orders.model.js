@@ -1,5 +1,11 @@
 import mongoose from 'mongoose';
 const orderSchema = new mongoose.Schema({
+    userName: {
+        type: String,
+    },
+    userPic: {
+        type: String,
+    },
     userId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Student',
@@ -21,6 +27,12 @@ const orderSchema = new mongoose.Schema({
     quantity: {
         type: Number,
         required: true
+    },
+    shopName: {
+        type: String,
+    },
+    shopPic: {
+        type: String,
     },
     shopId: {
         type: mongoose.Schema.Types.ObjectId,

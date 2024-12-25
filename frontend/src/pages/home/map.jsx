@@ -186,7 +186,7 @@ const MapComponent = () => {
               <img class="object-cover" src="${location.img}" alt="Shop Image" style="width: 500px; height: 200px; border-radius: 8px; margin-bottom: 8px;" />
               <h3 class="font-bold text-2xl w-full">${location.title}</h3>
               <p class="w-full">${location.description}</p>
-              <a href="/?id=${location.id}" class="bg-blue-500 px-5 py-2 my-3 font-bold text-white">Order Shop</a>
+              <a href="/chat?id=${location.id}" class="bg-blue-500 px-5 py-2 my-3 font-bold text-white">Order Shop</a>
             </div>
           `)
         )

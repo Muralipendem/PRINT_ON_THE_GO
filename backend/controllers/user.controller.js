@@ -1,6 +1,6 @@
 import User from "../models/user.model.js";
 import Order from "../models/orders.model.js";
-
+import mongoose from "mongoose";
 // Fetch users for the sidebar
 export const getUsersForSidebar = async (req, res) => {
 	try {
@@ -97,15 +97,24 @@ export const getUserById = async (req, res) => {
 // Post a new order
 export const postOrder = async (req, res) => {
 	try {
-		const { pdfId, quantity, shopId } = req.body;
-		const userId = req.user._id;
+		const { pdfId, quantity, shopId, userId } = req.body;
 
-		// Create a new order
+		const user = await User.findById(userId).select("-password");
+		const shop = await User.findById(shopId).select("-password");
+
+		if(shop.role !== "shop") {
+			return res.status(400).json({ error: "Invalid shop ID" });
+		}
+
 		const newOrder = new Order({
-			userId,
-			pdfId,
-			quantity,
-			shopId,
+			userName: user.username,
+			userPic: user.profilePic,
+			userId: userId,
+			pdfId: pdfId,
+			quantity: quantity,
+			shopName: shop.username,
+			shopPic: shop.profilePic,
+			shopId: shopId,
 		});
 
 		await newOrder.save();
@@ -119,15 +128,55 @@ export const postOrder = async (req, res) => {
 
 // Fetch all orders
 export const getOrders = async (req, res) => {
-	try {
-		const orders = await Order.find()
-			.populate("userId", "username email") // Populate user details
-			.populate("file", "title") // Populate PDF details
-			.populate("shopId", "name"); // Populate shop details
+    try {
+        // Extract userId from the request body
+        const { userId } = req.body;
 
-		res.status(200).json(orders);
+        // Validate the userId
+        if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
+            return res.status(400).json({ error: "Invalid or missing user ID" });
+        }
+
+        // Convert userId to ObjectId using 'new'
+        const objectId = new mongoose.Types.ObjectId(userId);
+
+		const user = await User.findById(userId).select("-password");
+
+		if(user.role !== "user") {
+			const orders = await Order.find({ shopId: objectId });
+			return res.status(200).json(orders);
+		}
+
+
+        // Query the database for orders associated with this userId
+        const orders = await Order.find({ userId: objectId });
+
+
+        // Send orders back to the client
+        res.status(200).json(orders);
+    } catch (error) {
+        console.error("Error in getOrders:", error.message);
+        res.status(500).json({ error: "Internal server error" });
+    }
+};
+
+// update Order status
+export const updateOrderStatus = async (req, res) => {
+	try {
+		const { orderId, status } = req.body;
+
+		// Validate the orderId
+		if (!orderId || !mongoose.Types.ObjectId.isValid(orderId)) {
+			return res.status(400).json({ error: "Invalid or missing order ID" });
+		}
+
+		// Find the order by ID and update the status
+		const updatedOrder = await Order.findByIdAndUpdate(orderId, { status }, { new: true });
+
+		// Send the updated order back to the client
+		res.status(200).json(updatedOrder);
 	} catch (error) {
-		console.error("Error in getOrders:", error.message);
+		console.error("Error in updateOrderStatus:", error.message);
 		res.status(500).json({ error: "Internal server error" });
 	}
 };
