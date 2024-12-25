@@ -10,6 +10,7 @@ import { v4 } from "uuid";
 import { use } from "react";
 import useConversation from "../../zustand/useConversation";
 import { useAuthContext } from "../../context/AuthContext";
+import { IoMdAdd, IoMdAddCircle } from "react-icons/io";
 
 const MessageInput = () => {
   const [message, setMessage] = useState("");
@@ -163,7 +164,9 @@ const MessageInput = () => {
               htmlFor="file-upload"
               className="flex items-center justify-center cursor-pointer text-gray-400 hover:text-blue-500"
             >
-              <BsPaperclip className="text-lg" />
+              
+              {/* <BsPaperclip className="text-lg" /> */}
+              <IoMdAddCircle  /> 
               <input
                 id="file-upload"
                 type="file"

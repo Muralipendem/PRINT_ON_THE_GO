@@ -1,169 +1,230 @@
 import React, { useEffect, useRef, useState } from "react";
-import mapimg from "./map.svg";
+import maplibregl from "maplibre-gl";
+import "maplibre-gl/dist/maplibre-gl.css";
 
 const MapComponent = () => {
   const mapRef = useRef(null); // Reference for the map container
-  const mapInstanceRef = useRef(null); // Keep track of the Leaflet map instance
+  const mapInstanceRef = useRef(null); // Keep track of the MapLibre map instance
   const [radius, setRadius] = useState(1000); // Default radius in meters
+  const [locations, setLocations] = useState([]); // Dynamic locations from API
+  const drawRadiusCircle = (map, center, radius) => {
+    const radiusInMeters = radius;
 
-  // Hardcoded location points
-  const locations = [
-    {
-      lat: 17.8177421,
-      lng: 83.2111286,
-      title: "Xerox Solutions",
-      description: "This is location 1",
-      img: "https://media.istockphoto.com/id/1148183399/photo/close-up-hands-choosing-school-stationery-in-the-supermarket.jpg?s=612x612&w=0&k=20&c=LFSn0LcVvX1tmh6LJNBcLJ6VbK2N3RX3gyyTM0Rt0wU=",
-    },
-    {
-      lat: 17.8197412,
-      lng: 83.2131287,
-      title: "Xerox Solution 2",
-      description: "This is location 2",
-      img: "https://media.istockphoto.com/id/1148183399/photo/close-up-hands-choosing-school-stationery-in-the-supermarket.jpg?s=612x612&w=0&k=20&c=LFSn0LcVvX1tmh6LJNBcLJ6VbK2N3RX3gyyTM0Rt0wU=",
-    },
-  ];
+    const circleData = {
+      type: "FeatureCollection",
+      features: [
+        {
+          type: "Feature",
+          geometry: {
+            type: "Polygon",
+            coordinates: [
+              createCircle(center[0], center[1], radiusInMeters, 64),
+            ],
+          },
+        },
+      ],
+    };
 
-  // Haversine formula to calculate the distance between two points
-  const calculateDistance = (lat1, lon1, lat2, lon2) => {
-    const R = 6371; // Radius of Earth in km
-    const dLat = ((lat2 - lat1) * Math.PI) / 180;
-    const dLon = ((lon2 - lon1) * Math.PI) / 180;
-    const a =
-      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.cos((lat1 * Math.PI) / 180) *
-        Math.cos((lat2 * Math.PI) / 180) *
-        Math.sin(dLon / 2) *
-        Math.sin(dLon / 2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    return R * c * 1000; // Distance in meters
+    if (map.getSource("radius-circle")) {
+      map.getSource("radius-circle").setData(circleData);
+    } else {
+      map.addSource("radius-circle", {
+        type: "geojson",
+        data: circleData,
+      });
+
+      map.addLayer({
+        id: "radius-circle",
+        type: "fill",
+        source: "radius-circle",
+        paint: {
+          "fill-color": "#00bf60",
+          "fill-opacity": 0.3,
+        },
+      });
+    }
+  };
+
+  const createCircle = (lng, lat, radiusInMeters, points) => {
+    const coordinates = [];
+    const distanceX = radiusInMeters / (111.32 * 1000);
+    const distanceY = radiusInMeters / (111.32 * 1000);
+    const centerX = lng;
+    const centerY = lat;
+
+    for (let i = 0; i < points; i++) {
+      const angle = (i * 360) / points;
+      const x = centerX + distanceX * Math.cos((angle * Math.PI) / 180);
+      const y = centerY + distanceY * Math.sin((angle * Math.PI) / 180);
+      coordinates.push([x, y]);
+    }
+    coordinates.push(coordinates[0]);
+    return coordinates;
+  };
+
+  const fetchShops = async (userLat, userLng) => {
+    try {
+      const response = await fetch("/api/users/Getshops", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          latitude: userLat,
+          longitude: userLng,
+          maxDistance: radius,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch shops");
+      }
+
+      const data = await response.json();
+      setLocations(
+        data.map((shop) => ({
+          id: shop._id,
+          lat: shop.latitude,
+          lng: shop.longitude,
+          title: shop.fullName,
+          description: shop.description || "No description available",
+          img: shop.profilePic || "https://via.placeholder.com/100",
+        }))
+      );
+    } catch (error) {
+      console.error("Error fetching shops: ", error.message);
+    }
   };
 
   useEffect(() => {
-    if (mapInstanceRef.current) return; // Prevent reinitialization of the map
-
-    // Load Leaflet JS and CSS
-    const leafletCSS = document.createElement("link");
-    leafletCSS.rel = "stylesheet";
-    leafletCSS.href = "https://unpkg.com/leaflet@1.7.1/dist/leaflet.css";
-    document.head.appendChild(leafletCSS);
-
-    const leafletJS = document.createElement("script");
-    leafletJS.src = "https://unpkg.com/leaflet@1.7.1/dist/leaflet.js";
-    leafletJS.onload = () => {
-      const map = L.map(mapRef.current).setView([17.8177412, 83.2111287], 13);
-      mapInstanceRef.current = map;
-
-      // Add OpenStreetMap tiles
-      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        attribution:
-          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-      }).addTo(map);
-
-      // Custom user location icon
-      const userIcon = L.icon({
-        iconUrl: mapimg,
-        iconSize: [35, 41],
-        iconAnchor: [12, 41],
-      });
-
-      // Custom other locations icon
-      const locationIcon = L.icon({
-        iconUrl:
-          "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png",
-        iconSize: [25, 41],
-        iconAnchor: [12, 41],
-      });
-
-      // Get user location
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition((position) => {
-          const userLat = position.coords.latitude;
-          const userLng = position.coords.longitude;
-
-          const userMarker = L.marker([userLat, userLng], { icon: userIcon })
-            .addTo(map)
-            .bindPopup("Your Location")
-            .openPopup();
-
-          let rangeCircle;
-
-          const updateMarkersAndCircle = () => {
-            if (rangeCircle) map.removeLayer(rangeCircle);
-
-            rangeCircle = L.circle([userLat, userLng], {
-              color: "blue",
-              fillColor: "blue",
-              fillOpacity: 0.2,
-              radius: radius,
-            }).addTo(map);
-
-            map.eachLayer((layer) => {
-              if (layer instanceof L.Marker && layer !== userMarker) {
-                map.removeLayer(layer);
-              }
-            });
-
-            locations.forEach((location) => {
-              const distance = calculateDistance(
-                userLat,
-                userLng,
-                location.lat,
-                location.lng
-              );
-              if (distance <= radius) {
-                const marker = L.marker([location.lat, location.lng], {
-                  icon: locationIcon,
-                }).addTo(map);
-                marker.bindPopup(`
-                  <div class="flex flex-col items-center">
-                    <img src=${location.img} class="w-20 h-20 object-cover rounded-full mb-2" />
-                    <h3 class="text-lg font-bold">${location.title}</h3>
-                    <p>${location.description}</p>
-                    <p class="text-sm text-gray-600">Distance: ${distance.toFixed(
-                      2
-                    )} meters</p>
-                  </div>`);
-              }
-            });
-          };
-
-          updateMarkersAndCircle();
+    if (mapInstanceRef.current) return;
+  
+    const map = new maplibregl.Map({
+      container: mapRef.current,
+      style: "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json",
+      center: [83.2111287, 17.8177412],
+      zoom: 13,
+    });
+  
+    mapInstanceRef.current = map;
+  
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition((position) => {
+        const userLat = position.coords.latitude;
+        const userLng = position.coords.longitude;
+  
+        // Add current location marker with a zoom-in transition
+        const currentLocationMarker = new maplibregl.Marker({ color: "red" })
+          .setLngLat([userLng, userLat])
+          .setPopup(new maplibregl.Popup().setText("Your Location"))
+          .addTo(map);
+  
+        map.once('load', () => {
+          map.flyTo({
+            center: [userLng, userLat],
+            zoom: 14,
+            speed: 1.5, // Adjust speed as necessary
+            curve: 1, // Smooth curve
+            essential: true // Ensure animation is always present
+          });
         });
-      } else {
-        alert("Geolocation is not supported by this browser.");
-      }
-    };
-
-    document.body.appendChild(leafletJS);
-
+  
+        drawRadiusCircle(map, [userLng, userLat], radius);
+        fetchShops(userLat, userLng);
+      });
+    } else {
+      alert("Geolocation is not supported by this browser.");
+    }
+  
+    map.addControl(new maplibregl.NavigationControl(), "bottom-right");
+    map.addControl(new maplibregl.FullscreenControl(), "bottom-right");
+    map.addControl(
+      new maplibregl.GeolocateControl({
+        positionOptions: {
+          enableHighAccuracy: true,
+        },
+        trackUserLocation: true,
+        showUserHeading: true,
+        container: document.getElementById('geolocate-control-container') // Adjusting container position
+      }),
+      'bottom-right' // Position control to avoid overlapping
+    );
+    
+  
     return () => {
-      if (mapInstanceRef.current) {
-        mapInstanceRef.current.remove();
-        mapInstanceRef.current = null;
-      }
-      document.head.removeChild(leafletCSS);
-      document.body.removeChild(leafletJS);
+      map.remove();
+      mapInstanceRef.current = null;
     };
+  }, []);
+  
+
+  useEffect(() => {
+    if (!mapInstanceRef.current) return;
+
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition((position) => {
+        const userLat = position.coords.latitude;
+        const userLng = position.coords.longitude;
+
+        drawRadiusCircle(mapInstanceRef.current, [userLng, userLat], radius);
+        fetchShops(userLat, userLng);
+      });
+    }
   }, [radius]);
 
+  useEffect(() => {
+    if (!mapInstanceRef.current || locations.length === 0) return;
+  
+    const map = mapInstanceRef.current;
+  
+    locations.forEach((location) => {
+      const marker = new maplibregl.Marker({ color: "blue" })
+        .setLngLat([location.lng, location.lat])
+        .setPopup(
+          new maplibregl.Popup().setHTML(`
+            <div class="px-3 z-50 text-black items-center flex flex-col">
+              <img class="object-cover" src="${location.img}" alt="Shop Image" style="width: 500px; height: 200px; border-radius: 8px; margin-bottom: 8px;" />
+              <h3 class="font-bold text-2xl w-full">${location.title}</h3>
+              <p class="w-full">${location.description}</p>
+              <a href="/?id=${location.id}" class="bg-blue-500 px-5 py-2 my-3 font-bold text-white">Order Shop</a>
+            </div>
+          `)
+        )
+        .addTo(map);
+  
+      marker.getElement().addEventListener('click', () => {
+        map.flyTo({
+          center: [location.lng, location.lat],
+          zoom: 14,
+          speed: 1.5,
+          curve: 1,
+          essential: true
+        });
+      });
+    });
+  }, [locations]);
+  
+
   return (
-    <div className=" w-full h-full">
+    <div className="w-full h-full relative">
       <div
-        id="map"
+        id="map geolocate-control-container"
         ref={mapRef}
         className="w-full h-full rounded-lg shadow-lg"
       ></div>
-      <div className="mt-6 flex flex-col sm:flex-row justify-center items-center gap-4">
-        <label className="text-lg font-medium text-gray-700">
-          Search Radius (meters):
+      <div
+        className="absolute top-2 left-2 z-10 bg-white pl-2  rounded-lg shadow-md flex  sm:flex-row justify-center items-center gap-4"
+        style={{ maxWidth: "400px" }}
+      >
+        <label className="text-sm font-medium whitespace-nowrap text-gray-700">
+          Search Radius:
         </label>
         <input
           type="number"
           value={radius}
-          onChange={(e) => setRadius(parseInt(e.target.value, 10) || 1000)}
+          onChange={(e) => setRadius(parseInt(e.target.value, 10))}
           placeholder="Enter radius"
-          className="w-full sm:w-auto p-2 border rounded-lg shadow focus:outline-none focus:ring focus:ring-blue-300"
+          className="w-fit p-2 bg-white text-black border rounded-lg shadow focus:outline-none "
         />
       </div>
     </div>

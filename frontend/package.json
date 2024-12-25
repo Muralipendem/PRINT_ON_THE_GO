@@ -15,6 +15,7 @@
     "chat-app-yt": "file:..",
     "firebase": "^11.1.0",
     "frontend": "file:",
+    "mapbox-gl": "^3.9.1",
     "maplibre-gl": "^4.7.1",
     "PrintOnGo": "file:..",
     "react": "^18.2.0",
