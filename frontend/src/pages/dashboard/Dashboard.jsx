@@ -75,7 +75,7 @@ const Dashboard = () => {
             <h2 className="text-xl text-gray-500 font-semibold mb-4 ml-5">Your Orders</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 h-[80vh] py-5 px-5 w-full overflow-auto">
                 {orders.map((order) => (
-                    <div key={order._id} className="bg-white shadow-md rounded-lg p-4 max-h-[300px] overflow-auto">
+                    <div key={order._id} className={`bg-white shadow-md rounded-lg p-4  overflow-auto` + orders.length <= 2 ? "max-h-[300px]" : ""}>
                         <div className="flex items-center mb-4">
                             {authUser.role === "user" ? <img src={order.shopPic} alt="shop" className="w-12 h-12 rounded-full mr-4" /> : <img src={order.userPic} alt="user" className="w-12 h-12 rounded-full mr-4" />}
                             <div>
