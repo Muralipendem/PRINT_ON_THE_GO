@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import MessageContainer from "../../components/messages/MessageContainer";
 import Sidebar from "../../components/sidebar/Sidebar";
+import useConversation from "../../zustand/useConversation";
 
 const Home = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false); // State for sidebar open/close
   const [isMobile, setIsMobile] = useState(false); // State to check if it's mobile view
-
+  const { selectedConversation, setSelectedConversation } = useConversation();
   // Check window size on load and resize
   useEffect(() => {
     const handleResize = () => {
@@ -24,6 +25,39 @@ const Home = () => {
     // Cleanup event listener
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
+  useEffect(() => {
+    // get id from /?id=67683c99928f5bde6b86ae9e
+    const urlParams = new URLSearchParams(window.location.search);
+    const conversationId = urlParams.get("id");
+    if (conversationId) {
+      const getConversation = async () => {
+        try {
+          const res = await fetch(`/api/users/user/${conversationId}`);
+          const data = await res.json();
+    
+          if (data.error) {
+            throw new Error(data.error);
+          }
+    
+          // Ensure only one user is set in conversations
+          setSelectedConversation([data]); // Replace conversations with the single user
+          
+          // Automatically select the conversation
+          setSelectedConversation(data);
+          setSearch(""); // Clear the search input
+        } catch (error) {
+          toast.error(error.message);
+        }
+      };
+      getConversation().then(() => {
+        console.log("Conversation fetched");
+      });
+    }
+
+  }
+  , []);
+
 
   return (
     <div className="relative flex flex-col md:flex-row h-screen">

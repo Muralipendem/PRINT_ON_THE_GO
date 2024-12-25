@@ -1,170 +1,189 @@
 import { Link } from "react-router-dom";
-import GenderCheckbox from "./GenderCheckbox";
 import { useState } from "react";
+import { storage } from "../../firebase";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { v4 } from "uuid";
 import useSignup from "../../hooks/useSignup";
 
 const SignUp = () => {
-	const [inputs, setInputs] = useState({
-		fullName: "",
-		username: "",
-		password: "",
-		confirmPassword: "",
-		gender: "",
-	});
+    const [inputs, setInputs] = useState({
+        fullName: "",
+        username: "",
+        password: "",
+        confirmPassword: "",
+        role: "user",
+        profilePic: null,
+        latitude: null,
+        longitude: null,
+    });
 
-	const { loading, signup } = useSignup();
+    const { loading, signup } = useSignup();
 
-	const handleCheckboxChange = (gender) => {
-		setInputs({ ...inputs, gender });
-	};
+    const handleLocationFetch = async () => {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    setInputs({
+                        ...inputs,
+                        latitude: position.coords.latitude,
+                        longitude: position.coords.longitude,
+                    });
+                },
+                (error) => {
+                    console.error("Error fetching location: ", error);
+                    alert("Unable to fetch location. Please check location permissions.");
+                }
+            );
+        } else {
+            alert("Geolocation is not supported by this browser.");
+        }
+    };
 
-	const handleSubmit = async (e) => {
-		e.preventDefault();
-		await signup(inputs);
-	};
+    const handleRoleChange = (e) => {
+        setInputs({ ...inputs, role: e.target.value });
+    };
 
-	return (
-		<div className='flex flex-col items-center justify-center min-w-96 mx-auto'>
-			<div className='w-full p-6 rounded-lg shadow-md bg-gray-400 bg-clip-padding backdrop-filter backdrop-blur-lg bg-opacity-0'>
-				<h1 className='text-3xl font-semibold text-center text-gray-300'>
-					Sign Up <span className='text-blue-500'> PrintOnGo</span>
-				</h1>
+    const handleFileChange = async (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const fileRef = ref(storage, `files/${file.name}-${v4()}`); // Create unique file path in Firebase
 
-				<form onSubmit={handleSubmit}>
-					<div>
-						<label className='label p-2'>
-							<span className='text-base label-text'>Full Name</span>
-						</label>
-						<input
-							type='text'
-							placeholder='John Doe'
-							className='w-full input input-bordered  h-10'
-							value={inputs.fullName}
-							onChange={(e) => setInputs({ ...inputs, fullName: e.target.value })}
-						/>
-					</div>
+            try {
+                const snapshot = await uploadBytes(fileRef, file); // Upload file to Firebase
+                const downloadURL = await getDownloadURL(snapshot.ref); // Get download URL
 
-					<div>
-						<label className='label p-2 '>
-							<span className='text-base label-text'>Username</span>
-						</label>
-						<input
-							type='text'
-							placeholder='johndoe'
-							className='w-full input input-bordered h-10'
-							value={inputs.username}
-							onChange={(e) => setInputs({ ...inputs, username: e.target.value })}
-						/>
-					</div>
+                setInputs({ ...inputs, profilePic: downloadURL }); // Update profilePic state with Firebase URL
 
-					<div>
-						<label className='label'>
-							<span className='text-base label-text'>Password</span>
-						</label>
-						<input
-							type='password'
-							placeholder='Enter Password'
-							className='w-full input input-bordered h-10'
-							value={inputs.password}
-							onChange={(e) => setInputs({ ...inputs, password: e.target.value })}
-						/>
-					</div>
+            } catch (error) {
+                console.error("Error uploading file:", error);
+                alert("Error uploading file. Please try again.");
+            }
+        }
+    };
 
-					<div>
-						<label className='label'>
-							<span className='text-base label-text'>Confirm Password</span>
-						</label>
-						<input
-							type='password'
-							placeholder='Confirm Password'
-							className='w-full input input-bordered h-10'
-							value={inputs.confirmPassword}
-							onChange={(e) => setInputs({ ...inputs, confirmPassword: e.target.value })}
-						/>
-					</div>
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        console.log(inputs);  // Debug log here
+        await signup(inputs);
+    };
 
-					<GenderCheckbox onCheckboxChange={handleCheckboxChange} selectedGender={inputs.gender} />
+    return (
+        <div className="flex flex-col items-center justify-center min-w-96 mx-auto">
+            <div className="w-full p-6 rounded-lg shadow-md bg-gray-400 bg-clip-padding backdrop-filter backdrop-blur-lg bg-opacity-0">
+                <h1 className="text-3xl font-semibold text-center text-gray-300">
+                    Sign Up <span className="text-blue-500"> PrintOnGo</span>
+                </h1>
 
-					<Link
-						to={"/login"}
-						className='text-sm hover:underline hover:text-blue-600 mt-2 inline-block'
-						href='#'
-					>
-						Already have an account?
-					</Link>
+                <form onSubmit={handleSubmit} encType="multipart/form-data">
+                    <div>
+                        <label className="label p-2">
+                            <span className="text-base label-text">Full Name</span>
+                        </label>
+                        <input
+                            type="text"
+                            placeholder="John Doe"
+                            className="w-full input input-bordered h-10"
+                            value={inputs.fullName}
+                            onChange={(e) => setInputs({ ...inputs, fullName: e.target.value })}
+                        />
+                    </div>
 
-					<div>
-						<button className='btn btn-block btn-sm mt-2 border border-slate-700' disabled={loading}>
-							{loading ? <span className='loading loading-spinner'></span> : "Sign Up"}
-						</button>
-					</div>
-				</form>
-			</div>
-		</div>
-	);
+                    <div>
+                        <label className="label p-2">
+                            <span className="text-base label-text">Username</span>
+                        </label>
+                        <input
+                            type="text"
+                            placeholder="johndoe"
+                            className="w-full input input-bordered h-10"
+                            value={inputs.username}
+                            onChange={(e) => setInputs({ ...inputs, username: e.target.value })}
+                        />
+                    </div>
+
+                    <div>
+                        <label className="label">
+                            <span className="text-base label-text">Password</span>
+                        </label>
+                        <input
+                            type="password"
+                            placeholder="Enter Password"
+                            className="w-full input input-bordered h-10"
+                            value={inputs.password}
+                            onChange={(e) => setInputs({ ...inputs, password: e.target.value })}
+                        />
+                    </div>
+
+                    <div>
+                        <label className="label">
+                            <span className="text-base label-text">Confirm Password</span>
+                        </label>
+                        <input
+                            type="password"
+                            placeholder="Confirm Password"
+                            className="w-full input input-bordered h-10"
+                            value={inputs.confirmPassword}
+                            onChange={(e) => setInputs({ ...inputs, confirmPassword: e.target.value })}
+                        />
+                    </div>
+
+                    <div>
+                        <label className="label p-2">
+                            <span className="text-base label-text">Role</span>
+                        </label>
+                        <select
+                            className="w-full select select-bordered h-10"
+                            value={inputs.role}
+                            onChange={handleRoleChange}
+                        >
+                            <option value="user">User</option>
+                            <option value="shop">Shop</option>
+                        </select>
+                    </div>
+
+                    <div className="mt-2">
+                        <button
+                            type="button"
+                            className="btn btn-sm border border-slate-700"
+                            onClick={handleLocationFetch}
+                        >
+                            Fetch Location
+                        </button>
+                        {inputs.latitude && inputs.longitude && (
+                            <p className="text-xs text-gray-400 mt-1">
+                                Location: {inputs.latitude}, {inputs.longitude}
+                            </p>
+                        )}
+                    </div>
+
+                    <div className="mt-2">
+                        <label className="label p-2">
+                            <span className="text-base label-text">Profile Picture</span>
+                        </label>
+                        <input
+                            type="file"
+                            accept="image/*"
+                            className="w-full file-input file-input-bordered h-10"
+                            onChange={handleFileChange}
+                        />
+                    </div>
+
+                    <Link
+                        to={"/login"}
+                        className="text-sm hover:underline hover:text-blue-600 mt-2 inline-block"
+                    >
+                        Already have an account?
+                    </Link>
+
+                    <div>
+                        <button className="btn btn-block btn-sm mt-2 border border-slate-700" disabled={loading}>
+                            {loading ? <span className="loading loading-spinner"></span> : "Sign Up"}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    );
 };
+
 export default SignUp;
-
-// STARTER CODE FOR THE SIGNUP COMPONENT
-// import GenderCheckbox from "./GenderCheckbox";
-
-// const SignUp = () => {
-// 	return (
-// 		<div className='flex flex-col items-center justify-center min-w-96 mx-auto'>
-// 			<div className='w-full p-6 rounded-lg shadow-md bg-gray-400 bg-clip-padding backdrop-filter backdrop-blur-lg bg-opacity-0'>
-// 				<h1 className='text-3xl font-semibold text-center text-gray-300'>
-// 					Sign Up <span className='text-blue-500'> PrintOnGo</span>
-// 				</h1>
-
-// 				<form>
-// 					<div>
-// 						<label className='label p-2'>
-// 							<span className='text-base label-text'>Full Name</span>
-// 						</label>
-// 						<input type='text' placeholder='John Doe' className='w-full input input-bordered  h-10' />
-// 					</div>
-
-// 					<div>
-// 						<label className='label p-2 '>
-// 							<span className='text-base label-text'>Username</span>
-// 						</label>
-// 						<input type='text' placeholder='johndoe' className='w-full input input-bordered h-10' />
-// 					</div>
-
-// 					<div>
-// 						<label className='label'>
-// 							<span className='text-base label-text'>Password</span>
-// 						</label>
-// 						<input
-// 							type='password'
-// 							placeholder='Enter Password'
-// 							className='w-full input input-bordered h-10'
-// 						/>
-// 					</div>
-
-// 					<div>
-// 						<label className='label'>
-// 							<span className='text-base label-text'>Confirm Password</span>
-// 						</label>
-// 						<input
-// 							type='password'
-// 							placeholder='Confirm Password'
-// 							className='w-full input input-bordered h-10'
-// 						/>
-// 					</div>
-
-// 					<GenderCheckbox />
-
-// 					<a className='text-sm hover:underline hover:text-blue-600 mt-2 inline-block' href='#'>
-// 						Already have an account?
-// 					</a>
-
-// 					<div>
-// 						<button className='btn btn-block btn-sm mt-2 border border-slate-700'>Sign Up</button>
-// 					</div>
-// 				</form>
-// 			</div>
-// 		</div>
-// 	);
-// };
-// export default SignUp;
