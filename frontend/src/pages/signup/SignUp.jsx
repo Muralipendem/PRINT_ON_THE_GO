@@ -186,6 +186,7 @@ const SignUp = () => {
                         <span className="text-base label-text">Address</span>
                     </label>
                     <OpenStreetMapAutocomplete
+                    className="md:w-full lg:w-full "
         value={null}
         onChange={(option) => handleOnOptionSelected("First component", option)}
         // onpressEnter={(option) => handleOnOptionSelected("First component", option)}
