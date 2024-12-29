@@ -17,3 +17,11 @@ input{
 .autocomplete-list-wrapper{
     position: relative;
 }
+
+/* addding media query for mobile screen */
+
+@media (max-width: 768px) {
+    .autocomplete-form{
+        width: 90vw !important;
+    }
+}

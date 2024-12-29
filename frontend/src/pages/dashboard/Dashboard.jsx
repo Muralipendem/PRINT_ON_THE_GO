@@ -70,7 +70,7 @@ const Dashboard = () => {
                 <div className='flex gap-2'>
                     {authUser.role === "user" && <button onClick={() => { navigate('/map') }} className='bg-blue-500 px-5 py-3 whitespace-nowrap text-white rounded-xl text-base'> Create Order </button>}
                     <button className='bg-red-500 px-5 md:block lg:block hidden text-white py-3 rounded-xl' onClick={logout}>Logout</button>
-                    <div className='text-2xl bg-red-500 py-2 px-3 rounded-xl flex items-center justify-center md:hidden lg:hidden text-white'>
+                    <div className='text-2xl bg-red-500 py-2 px-3 rounded-xl flex items-center justify-center md:hidden lg:hidden text-white' onClick={logout}>
                     <BiLogOut  />
                     </div>
                 </div>
