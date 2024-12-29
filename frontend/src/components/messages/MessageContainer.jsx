@@ -4,7 +4,9 @@ import MessageInput from "./MessageInput";
 import Messages from "./Messages";
 import { TiMessages } from "react-icons/ti";
 import { useAuthContext } from "../../context/AuthContext";
-
+import { FiMapPin } from "react-icons/fi";
+import { MdDashboard } from "react-icons/md";
+import { useNavigate } from "react-router-dom";
 const MessageContainer = () => {
 	const { selectedConversation, setSelectedConversation } = useConversation();
 
@@ -12,6 +14,7 @@ const MessageContainer = () => {
 		// Cleanup function
 		return () => setSelectedConversation(null);
 	}, [setSelectedConversation]);
+	const navigate = useNavigate();
 
 	return (
 		<div className="flex-grow flex flex-col md:min-w-[450px] bg-gray-100">
@@ -20,9 +23,18 @@ const MessageContainer = () => {
 			) : (
 				<>
 					{/* Header */}
-					<div className="bg-blue-600 text-white px-4 py-2 mb-2 rounded-b-lg">
+					<div className="bg-blue-600 flex justify-between items-center text-white px-4 py-2 mb-2 rounded-b-lg">
+						<div>
 						<span className="label-text">To:</span>{" "}
 						<span className="font-bold">{selectedConversation.fullName}</span>
+						</div>
+						{/* go to /map and go to / */}
+						<div className="flex items-center gap-4 ">
+						<MdDashboard className="hover:text-green-500" onClick={() => navigate('/')} />
+						<FiMapPin className="hover:text-red-500" onClick={() => navigate('/map')} />
+						</div>
+
+
 					</div>
 					<Messages selectedConversation={selectedConversation} />
 					<MessageInput />

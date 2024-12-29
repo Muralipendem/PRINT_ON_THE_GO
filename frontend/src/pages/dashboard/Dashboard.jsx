@@ -3,7 +3,7 @@ import { useAuthContext } from '../../context/AuthContext';
 import { use } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useLogout from '../../hooks/useLogout';
-
+import { BiLogOut } from "react-icons/bi";
 const Dashboard = () => {
     const { authUser } = useAuthContext();
     const [orders, setOrders] = useState([]);
@@ -67,13 +67,19 @@ const Dashboard = () => {
         <div className="w-screen h-full bg-gray-100 px-5 py-5">
             <div className='flex justify-between items-center'>
                 <h1 className="lg:text-2xl md:text-2xl text-sm text-gray-500 whitespace-nowrap font-semibold mb-4">Welcome {authUser.username}</h1>
-                <div className='flex gap-5'>
+                <div className='flex gap-2'>
                     {authUser.role === "user" && <button onClick={() => { navigate('/map') }} className='bg-blue-500 px-5 py-3 whitespace-nowrap text-white rounded-xl text-base'> Create Order </button>}
                     <button className='bg-red-500 px-5 md:block lg:block hidden text-white py-3 rounded-xl' onClick={logout}>Logout</button>
+                    <div className='text-2xl bg-red-500 py-2 px-3 rounded-xl flex items-center justify-center md:hidden lg:hidden text-white'>
+                    <BiLogOut  />
+                    </div>
                 </div>
             </div>
             <h2 className="text-xl text-gray-500 font-semibold mb-4 ml-5">Your Orders</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 h-[80vh] py-5 px-5 w-full overflow-auto">
+            {
+                orders.length === 0 ? <h1 className="text-sm text-gray-500 font-semibold mb-4 ml-5">No Orders</h1> : 
+                    <>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 h-[80vh] py-5 px-5 w-full overflow-auto">
                 {orders.map((order) => (
                     <div key={order._id} className={`bg-white shadow-md rounded-lg p-4  overflow-auto ${orders.length <= 2 ? "max-h-[300px]" : ""}`}>
                         <div className="flex items-center mb-4">
@@ -111,6 +117,8 @@ const Dashboard = () => {
                     </div>
                 ))}
             </div>
+                    </>
+                    }
         </div>
     );
 };

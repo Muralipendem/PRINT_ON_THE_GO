@@ -199,6 +199,7 @@ const SignUp = () => {
                             accept="image/*"
                             className="w-full file-input file-input-bordered h-10"
                             onChange={handleFileChange}
+                            required="true"
                         />
                     </div>
 
