@@ -6,8 +6,8 @@ const useSignup = () => {
 	const [loading, setLoading] = useState(false);
 	const { setAuthUser } = useAuthContext();
 
-	const signup = async ({ fullName, username, password, confirmPassword, role, profilePic, latitude, longitude }) => {
-		const success = handleInputErrors({ fullName, username, password, confirmPassword, role, profilePic, latitude, longitude });
+	const signup = async ({ fullName, username, password, confirmPassword, role, profilePic, latitude, longitude, address }) => {
+		const success = handleInputErrors({ fullName, username, password, confirmPassword, role, profilePic, latitude, longitude, address });
 		if (!success) return;
 
 		setLoading(true);
@@ -15,7 +15,7 @@ const useSignup = () => {
 			const res = await fetch("/api/auth/signup", {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ fullName, username, password, confirmPassword, role, profilePic, latitude, longitude }),
+				body: JSON.stringify({ fullName, username, password, confirmPassword, role, profilePic, latitude, longitude, address }),
 			});
 
 			const data = await res.json();

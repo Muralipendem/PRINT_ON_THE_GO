@@ -10,6 +10,7 @@ const userSchema = new mongoose.Schema(
 		role: { type: String, default: "user", required: true, enum: ["shop", "user"] },
 		longitude: { type: Number, default: 0 },
 		latitude: { type: Number, default: 0 },
+		address: {type: String, required: true},
 	},
 	{ timestamps: true }
 );

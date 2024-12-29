@@ -1,0 +1,19 @@
+.autocomplete-form {
+    background-color: #1d232a !important;
+}
+.autocomplete-input-wrapper{
+    background-color: transparent !important;
+}
+input{
+    background-color: #1d232a !important;
+    color: white !important;
+}
+.autocomplete-options{
+    background-color: #1d232a !important;
+    color: white !important;
+    position: absolute;
+}
+
+.autocomplete-list-wrapper{
+    position: relative;
+}

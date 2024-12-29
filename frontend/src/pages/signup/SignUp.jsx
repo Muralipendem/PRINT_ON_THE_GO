@@ -4,7 +4,9 @@ import { storage } from "../../firebase";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { v4 } from "uuid";
 import useSignup from "../../hooks/useSignup";
-
+import { OpenStreetMapAutocomplete } from "@amraneze/osm-autocomplete";
+import "./wrapper.css";
+import { set } from "mongoose";
 const SignUp = () => {
     const [inputs, setInputs] = useState({
         fullName: "",
@@ -15,9 +17,13 @@ const SignUp = () => {
         profilePic: null,
         latitude: null,
         longitude: null,
+        address: "",
     });
 
     const { loading, signup } = useSignup();
+
+    
+
 
     const handleLocationFetch = async () => {
         if (navigator.geolocation) {
@@ -38,10 +44,31 @@ const SignUp = () => {
             alert("Geolocation is not supported by this browser.");
         }
     };
+    const handleOnOptionSelected = (field, option) => {
+        console.log(field, { option: option });
+        // setInputs({ ...inputs, address: option.display_name || option.name });
+        // setInputs({ ...inputs, latitude: option.lat });
+        // setInputs({ ...inputs, longitude: option.lon });
+        setInputs({
+            ...inputs,
+            address: option.display_name || option.name,
+            latitude: option.lat,
+            longitude: option.lon,
+        });
 
+      };
+      
     const handleRoleChange = (e) => {
         setInputs({ ...inputs, role: e.target.value });
     };
+
+    const allForms = document.querySelectorAll("form");
+    allForms.forEach((form) => {
+        form.addEventListener("submit", (e) => {
+            e.preventDefault();
+        });
+    });
+
 
     const handleFileChange = async (e) => {
         const file = e.target.files[0];
@@ -141,7 +168,7 @@ const SignUp = () => {
                         </select>
                     </div>
 
-                    <div className="mt-2">
+                    {/* <div className="mt-2">
                         <button
                             type="button"
                             className="btn btn-sm border border-slate-700"
@@ -154,8 +181,15 @@ const SignUp = () => {
                                 Location: {inputs.latitude}, {inputs.longitude}
                             </p>
                         )}
-                    </div>
-
+                    </div> */}
+                    <label className="label p-2">
+                        <span className="text-base label-text">Address</span>
+                    </label>
+                    <OpenStreetMapAutocomplete
+        value={null}
+        onChange={(option) => handleOnOptionSelected("First component", option)}
+        // onpressEnter={(option) => handleOnOptionSelected("First component", option)}
+      />
                     <div className="mt-2">
                         <label className="label p-2">
                             <span className="text-base label-text">Profile Picture</span>

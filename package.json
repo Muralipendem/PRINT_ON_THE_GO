@@ -13,14 +13,15 @@
 	"author": "",
 	"license": "ISC",
 	"dependencies": {
+		"@amraneze/osm-autocomplete": "^0.0.7-beta",
 		"bcryptjs": "^2.4.3",
-		"chat-app-yt": "file:",
 		"cookie-parser": "^1.4.6",
 		"dotenv": "^16.4.1",
 		"express": "^4.18.2",
 		"jsonwebtoken": "^9.0.2",
 		"mongoose": "^8.1.1",
 		"multer": "^1.4.5-lts.1",
+		"PrintOnGo": "file:",
 		"socket.io": "^4.7.4",
 		"uuid": "^11.0.3"
 	},
