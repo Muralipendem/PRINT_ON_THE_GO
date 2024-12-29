@@ -64,7 +64,7 @@ const Home = () => {
       {/* Mobile Header */}
       {isMobile && (
         <div className="flex items-center justify-between bg-blue-600 text-white p-2 shadow-md md:hidden">
-          <h1 className="text-xl font-semibold">Chat App</h1>
+          <h1 className="text-xl font-semibold">Print On Go</h1>
           <button
             className="p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-white"
             onClick={() => setIsSidebarOpen(true)}

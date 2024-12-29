@@ -4,7 +4,7 @@ import generateTokenAndSetCookie from "../utils/generateToken.js";
 
 export const signup = async (req, res) => {
 	try {
-		const { fullName, username, password, confirmPassword, longitude, latitude, role, profilePic } = req.body;
+		const { fullName, username, password, confirmPassword, longitude, latitude, role, profilePic, address } = req.body;
 
 		if (password !== confirmPassword) {
 			return res.status(400).json({ error: "Passwords don't match" });
@@ -33,7 +33,8 @@ export const signup = async (req, res) => {
 			role,
 			longitude,
 			latitude,
-			profilePic
+			profilePic,
+			address
 		});
 
 		if (newUser) {
@@ -49,6 +50,7 @@ export const signup = async (req, res) => {
 			longitude: newUser.longitude,
 			latitude: newUser.latitude,
 			profilePic: newUser.profilePic,
+			address: newUser.address
 			});
 		} else {
 			res.status(400).json({ error: "Invalid user data" });
