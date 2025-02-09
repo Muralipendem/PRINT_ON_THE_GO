@@ -22,6 +22,8 @@ const MessageInput = () => {
   const [printOptions, setPrintOptions] = useState({
     paperSize: "A4",
     copies: 1,
+    sides: 1,
+    color: "black",
   });
 
   const { loading, sendMessage } = useSendMessage();
@@ -80,6 +82,8 @@ const MessageInput = () => {
                 file_url: downloadURL,
                 paper_size: printOptions.paperSize,
                 copies: printOptions.copies,
+                sides: printOptions.sides,
+                color: printOptions.color,
             });
         }
 
@@ -105,6 +109,8 @@ const MessageInput = () => {
               pdfId: [], // Initialize pdfId as an empty array
               quantity: 0,
               shopId: selectedConversation._id,
+              sides: printOptions.sides,
+                color: printOptions.color,
           };
       
           // Map file URLs to strings and assign to pdfId
@@ -264,6 +270,30 @@ const MessageInput = () => {
                   <option value="A4">A4</option>
                   <option value="A3">A3</option>
                   <option value="Letter">Letter</option>
+                </select>
+              </div>
+              <div className="mb-4">
+                <label className="block text-sm mb-1">Color</label>
+                <select
+                  name="paperSize"
+                  value={printOptions.color}
+                  onChange={handlePrintOptionsChange}
+                  className="block w-full p-2 bg-gray-700 border border-gray-600 rounded text-white"
+                >
+                  <option value="black">Black</option>
+                  <option value="white">White</option>
+                </select>
+              </div>
+              <div className="mb-4">
+                <label className="block text-sm mb-1">Sides</label>
+                <select
+                  name="paperSize"
+                  value={printOptions.sides}
+                  onChange={handlePrintOptionsChange}
+                  className="block w-full p-2 bg-gray-700 border border-gray-600 rounded text-white"
+                >
+                  <option value="1">1</option>
+                  <option value="2">2</option>
                 </select>
               </div>
 

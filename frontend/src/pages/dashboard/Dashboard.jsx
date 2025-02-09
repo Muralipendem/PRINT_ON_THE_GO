@@ -99,6 +99,8 @@ const Dashboard = () => {
                                     </>}
                             </div>
                             <p className="text-gray-700">Quantity: {order.quantity}</p>
+                            <p className="text-gray-700">Color: {order.color ?? "Not-Mentioned"}</p>
+                            <p className="text-gray-700">Sides: {order.sides ?? "Not-Mentioned"}</p>
                         </div>
                         <div>
                             {/* <a href={order.pdfId[0]} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">

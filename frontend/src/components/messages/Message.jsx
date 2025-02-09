@@ -41,9 +41,8 @@ const Message = ({ message }) => {
             </div>
             <div className={`chat-bubble text-white ${bubbleBgColor} ${shakeClass} pb-2`}>
                 {message.message.startsWith('ThisIsAFileCode') ? (
-                    
                     <div>
-                        <p>  Order Created</p>
+                        <p>  Order Created </p> 
                         <div className="flex flex-col gap-2">
                         {JSON.parse(message.message.replace('ThisIsAFileCode', '')).map((fileObj, index) => (
                         <div key={index} className="mt-2 bg-white overflow-hidden h-52 relative flex w-44 md:w-72 lg:w-72 rounded-t-xl rounded-b-lg">

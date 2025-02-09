@@ -97,7 +97,7 @@ export const getUserById = async (req, res) => {
 // Post a new order
 export const postOrder = async (req, res) => {
 	try {
-		const { pdfId, quantity, shopId, userId } = req.body;
+		const { pdfId, quantity, shopId, userId, sides, color } = req.body;
 
 		const user = await User.findById(userId).select("-password");
 		const shop = await User.findById(shopId).select("-password");
@@ -111,6 +111,8 @@ export const postOrder = async (req, res) => {
 			userPic: user.profilePic,
 			userId: userId,
 			pdfId: pdfId,
+			sides: sides,
+			color: color,
 			quantity: quantity,
 			shopName: shop.username,
 			shopPic: shop.profilePic,
