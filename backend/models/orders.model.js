@@ -38,6 +38,14 @@ const orderSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Shop',
         required: true
+    },
+    sides: {
+        type: String,
+        required: true
+    },
+    color: {
+        type: String,
+        required: true
     }
 });
 
