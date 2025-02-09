@@ -51,7 +51,7 @@ const Message = ({ message }) => {
                                 fileObj.file_url.includes('.jpg') || fileObj.file_url.includes('.jpeg') || fileObj.file_url.includes('.png') || fileObj.file_url.includes('.gif') ? (
                                     <img
                                         src={fileObj.file_url}
-                                        alt="Uploaded Preview"
+                                        alt="File deleted"
                                         className=" cursor-pointer h-52   md:w-72 lg:w-72 w-44 object-cover rounded shadow hover:opacity-80 transition-opacity duration-300"
                                     />
                                 ) : fileObj.file_url.includes('.pdf') ? (

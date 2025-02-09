@@ -4,6 +4,9 @@ import { use } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useLogout from '../../hooks/useLogout';
 import { BiLogOut } from "react-icons/bi";
+import { ref, deleteObject } from 'firebase/storage';
+import { storage } from '../../firebase'; // Ensure you have Firebase storage initialized
+
 const Dashboard = () => {
     const { authUser } = useAuthContext();
     const [orders, setOrders] = useState([]);
@@ -40,7 +43,7 @@ const Dashboard = () => {
 
     }
 
-    const UpdateOrder = async (orderId, status) => {
+    const UpdateOrder = async (orderId, status, pdfs) => {
         try {
             const response = await fetch("/api/users/updateOrder", {
                 method: "PUT",
@@ -48,20 +51,40 @@ const Dashboard = () => {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    orderId: orderId, // Ensure this is a valid string
-                    status: status, // Ensure this is a valid string
+                    orderId: orderId, 
+                    status: status, 
                 }),
             });
-
+    
             if (!response.ok) {
                 throw new Error("Failed to update order");
             }
             fetchOrders();
-
+    
+            if (status === "cancelled" || status === "completed") {
+                alert("Deleting PDFs...");
+                
+                // Use Promise.all to ensure all deletions complete
+                await Promise.all(pdfs.map(async (pdfUrl) => {
+                    try {
+                        const storageRef = ref(storage, pdfUrl); // Correctly reference storage
+                        await deleteObject(storageRef);
+                        console.log(`Deleted: ${pdfUrl}`);
+                    } catch (error) {
+                        console.error("Error deleting PDF:", error.message);
+                    }
+                }));
+    
+                alert("Order Updated Successfully");
+            }
+    
         } catch (error) {
             console.error("Error updating order:", error.message);
         }
-    }
+    };
+    
+
+    
 
     return (
         <div className="w-screen h-full bg-gray-100 px-5 py-5">
@@ -81,7 +104,7 @@ const Dashboard = () => {
                     <>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 h-[80vh] py-5 px-5 w-full overflow-auto">
                 {orders.map((order) => (
-                    <div key={order._id} className={`bg-white shadow-md rounded-lg p-4  overflow-auto ${orders.length <= 2 ? "max-h-[300px]" : ""}`}>
+                    <div key={order._id} className={`bg-white shadow-md rounded-lg p-4  no-scrollbar overflow-auto ${orders.length <= 2 ? "max-h-[300px]" : "min-h-[30vh]"}`}>
                         <div className="flex items-center mb-4">
                             {authUser.role === "user" ? <img src={order.shopPic} alt="shop" className="w-12 h-12 rounded-full mr-4" /> : <img src={order.userPic} alt="user" className="w-12 h-12 rounded-full mr-4" />}
                             <div>
@@ -90,13 +113,18 @@ const Dashboard = () => {
                             </div>
                         </div>
                         <div className="mb-4">
-                            <div className='flex justify-between'>
+                            <div className='flex justify-between items-center'>
                                 <p className="text-gray-700">Status: <span className={`${order.status === "pending" ? "text-yellow-500" : order.status === "completed" ? "text-green-500" : "text-red-500"}`}>{order.status}</span> </p>
+                                {
+                                        (authUser.role === "shop" && order.status === "pending") ? <a href={`/chat?id=${order.userId}`} className='bg-blue-500 h-fit py-2 px-3 rounded-xl font-semibold text-white cursor-pointer' > Chat with User
+                                            </a> : null
+                                    }
                                 {(order.status === "pending") &&
                                     <>
-                                        {authUser.role == "user" ? <p onClick={() => UpdateOrder(order._id, "cancelled")} className='text-white md:text-base lg:text-base text-xs bg-red-500 px-5 py-3 rounded-xl cursor-pointer'>Cancel Order</p> : <p onClick={() => UpdateOrder(order._id, "completed")} className="bg-green-500 px-5 py-3 rounded-xl text-white md:text-base lg:text-base text-xs cursor-pointer">Complete Order</p>}
+                                        {authUser.role == "user" ? <p onClick={() => UpdateOrder(order._id, "cancelled", order.pdfId)} className='text-white md:text-base lg:text-base text-xs bg-red-500 px-5 py-3 rounded-xl cursor-pointer'>Cancel Order</p> : <p onClick={() => UpdateOrder(order._id, "completed", order.pdfId)} className="bg-green-500 px-5 py-3 rounded-xl text-white md:text-base lg:text-base text-xs cursor-pointer">Complete Order</p>}
 
                                     </>}
+                                   
                             </div>
                             <p className="text-gray-700">Quantity: {order.quantity}</p>
                             <p className="text-gray-700">Color: {order.color ?? "Not-Mentioned"}</p>
@@ -107,12 +135,16 @@ const Dashboard = () => {
                                 View PDF
                             </a> */}
                             {order.pdfId.map((pdf, index) => (
-                                <div className='flex justify-between w-full'>
-                                    <a key={index} href={pdf} target="_blank" rel="noopener noreferrer" className="whitespace-nowrap text-blue-500 hover:underline block">
-                                        View Document {index + 1}
-                                    </a>
-                                    {authUser.role === "shop" && <p className='hover:underline hover:text-blue-500 text-black cursor-pointer'>Print</p>}
-                                </div>
+                                <>
+                                    {
+                                        order.status === "pending" ? <div className='flex justify-between w-full'>
+                                        <a key={index} href={pdf} target="_blank" rel="noopener noreferrer" className="whitespace-nowrap text-blue-500 hover:underline block">
+                                            View Document {index + 1}
+                                        </a>
+                                        {authUser.role === "shop" && <p className='hover:underline hover:text-blue-500 text-black cursor-pointer'>Print</p>}
+                                    </div> : null
+                                    }
+                                </>
 
                             ))}
                         </div>
