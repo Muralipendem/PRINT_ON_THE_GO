@@ -14,7 +14,7 @@ import Dashboard from "./pages/dashboard/Dashboard";
 function App() {
   const { authUser } = useAuthContext();
   return (
-    <div className="h-screen flex items-center justify-center">
+    <div className="h-screen flex items-center bg-white justify-center">
       <Routes>
         <Route
           path="/"
