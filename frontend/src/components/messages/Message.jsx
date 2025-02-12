@@ -17,7 +17,7 @@ const Message = ({ message }) => {
     useEffect(() => {
         const updateMessage = async () => {
             try {
-                const response = await fetch(`/api/messages/${message._id}`, {
+                const response = await fetch(`/api/messages/update/${message._id}`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",

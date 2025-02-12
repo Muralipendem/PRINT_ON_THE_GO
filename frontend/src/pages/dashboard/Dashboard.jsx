@@ -43,7 +43,7 @@ const Dashboard = () => {
 
     }
 
-    const UpdateOrder = async (orderId, status, pdfs) => {
+    const UpdateOrder = async (orderId, status, pdfs, shopId) => {
         try {
             const response = await fetch("/api/users/updateOrder", {
                 method: "PUT",
@@ -62,7 +62,17 @@ const Dashboard = () => {
             fetchOrders();
     
             if (status === "cancelled" || status === "completed") {
-                alert("Deleting PDFs...");
+                alert("Deleting Files...");
+                const response1 = await fetch("/api/messages/deleteChat", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        senderId: authUser._id,
+                        receiverId: shopId,
+                    }),
+                });
                 
                 // Use Promise.all to ensure all deletions complete
                 await Promise.all(pdfs.map(async (pdfUrl) => {
@@ -116,12 +126,15 @@ const Dashboard = () => {
                             <div className='flex justify-between items-center'>
                                 <p className="text-gray-700">Status: <span className={`${order.status === "pending" ? "text-yellow-500" : order.status === "completed" ? "text-green-500" : "text-red-500"}`}>{order.status}</span> </p>
                                 {
-                                        (authUser.role === "shop" && order.status === "pending") ? <a href={`/chat?id=${order.userId}`} className='bg-blue-500 h-fit py-2 px-3 rounded-xl font-semibold text-white cursor-pointer' > Chat with User
-                                            </a> : null
+                                         order.status === "pending" && <>
+                                        {authUser.role === "shop" ? <a href={`/chat?id=${order.userId}`} className='bg-blue-500 h-fit py-2 px-3 rounded-xl font-semibold text-white cursor-pointer' > Chat with User
+                                            </a> : <a href={`/chat?id=${order.shopId}`} className='bg-blue-500 h-fit py-2 px-3 rounded-xl font-semibold text-white cursor-pointer' > Chat with Shop
+                                            </a>}
+                                        </>
                                     }
                                 {(order.status === "pending") &&
                                     <>
-                                        {authUser.role == "user" ? <p onClick={() => UpdateOrder(order._id, "cancelled", order.pdfId)} className='text-white md:text-base lg:text-base text-xs bg-red-500 px-5 py-3 rounded-xl cursor-pointer'>Cancel Order</p> : <p onClick={() => UpdateOrder(order._id, "completed", order.pdfId)} className="bg-green-500 px-5 py-3 rounded-xl text-white md:text-base lg:text-base text-xs cursor-pointer">Complete Order</p>}
+                                        {authUser.role == "user" ? <p onClick={() => UpdateOrder(order._id, "cancelled", order.pdfId, order.shopId)} className='text-white md:text-base lg:text-base text-xs bg-red-500 px-5 py-3 rounded-xl cursor-pointer'>Cancel Order</p> : <p onClick={() => UpdateOrder(order._id, "completed", order.pdfId, order.userId)} className="bg-green-500 px-5 py-3 rounded-xl text-white md:text-base lg:text-base text-xs cursor-pointer">Complete Order</p>}
 
                                     </>}
                                    

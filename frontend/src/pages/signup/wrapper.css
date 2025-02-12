@@ -1,16 +1,16 @@
 .autocomplete-form {
-    background-color: #1d232a !important;
+    background-color: #ffff !important;
 }
 .autocomplete-input-wrapper{
     background-color: transparent !important;
 }
 input{
-    background-color: #1d232a !important;
-    color: white !important;
+    background-color: #ffff !important;
+    color: black !important;
 }
 .autocomplete-options{
-    background-color: #1d232a !important;
-    color: white !important;
+    background-color: #ffff !important;
+    color: black !important;
     position: absolute;
 }
 
