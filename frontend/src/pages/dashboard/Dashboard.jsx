@@ -123,24 +123,24 @@ const Dashboard = () => {
                             </div>
                         </div>
                         <div className="mb-4">
-                            <div className='flex justify-between items-center'>
+                            <div className='flex justify-between gap-5 items-center'>
                                 <p className="text-gray-700">Status: <span className={`${order.status === "pending" ? "text-yellow-500" : order.status === "completed" ? "text-green-500" : "text-red-500"}`}>{order.status}</span> </p>
                                 {
                                          order.status === "pending" && <>
-                                        {authUser.role === "shop" ? <a href={`/chat?id=${order.userId}`} className='bg-blue-500 h-fit py-2 px-3 rounded-xl font-semibold text-white cursor-pointer' > Chat with User
-                                            </a> : <a href={`/chat?id=${order.shopId}`} className='bg-blue-500 h-fit py-2 px-3 rounded-xl font-semibold text-white cursor-pointer' > Chat with Shop
+                                        {authUser.role === "shop" ? <a href={`/chat?id=${order.userId}`} className='bg-blue-500 h-fit py-2 px-3 rounded-xl font-semibold text-white cursor-pointer whitespace-nowrap text-sm' > Chat with User
+                                            </a> : <a href={`/chat?id=${order.shopId}`} className='bg-blue-500 h-fit py-2 px-3 rounded-xl font-semibold text-white cursor-pointer whitespace-nowrap text-sm' > Chat with Shop
                                             </a>}
                                         </>
                                     }
                                 {(order.status === "pending") &&
                                     <>
-                                        {authUser.role == "user" ? <p onClick={() => UpdateOrder(order._id, "cancelled", order.pdfId, order.shopId)} className='text-white md:text-base lg:text-base text-xs bg-red-500 px-5 py-3 rounded-xl cursor-pointer'>Cancel Order</p> : <p onClick={() => UpdateOrder(order._id, "completed", order.pdfId, order.userId)} className="bg-green-500 px-5 py-3 rounded-xl text-white md:text-base lg:text-base text-xs cursor-pointer">Complete Order</p>}
-
+                                        {authUser.role == "user" ? <p  onClick={() => UpdateOrder(order._id, "cancelled", order.pdfId, order.shopId)} className='whitespace-nowrap text-white md:text-sm text-xs bg-red-500 px-5 py-3 rounded-xl cursor-pointer'>Cancel Order</p> : <p  onClick={() => UpdateOrder(order._id, "completed", order.pdfId, order.userId)} className="whitespace-nowrap bg-green-500 px-5 py-3 rounded-xl text-white md:text-sm text-xs cursor-pointer">Complete Order</p>}
+                                        {authUser.role === "shop" && <p  onClick={() => UpdateOrder(order._id, "rejected", order.pdfId, order.userId)} className='whitespace-nowrap text-white md:text-sm text-xs bg-red-500 px-5 py-3 rounded-xl cursor-pointer'>Reject Order</p>}
                                     </>}
                                    
                             </div>
                             <p className="text-gray-700">Quantity: {order.quantity}</p>
-                            <p className="text-gray-700">Color: {order.color ?? "Not-Mentioned"}</p>
+                            <p className="text-gray-700">Type: {order.color === "white" ? "color" : order.color === "black" ? "Black & White" : "Not Mentioned"}</p>
                             <p className="text-gray-700">Sides: {order.sides ?? "Not-Mentioned"}</p>
                         </div>
                         <div>
