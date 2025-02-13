@@ -275,20 +275,20 @@ const MessageInput = () => {
               <div className="mb-4">
                 <label className="block text-sm mb-1">Color</label>
                 <select
-                  name="paperSize"
-                  value={printOptions.color}
+                  name="color"
+                  defaultValue={printOptions.color}
                   onChange={handlePrintOptionsChange}
                   className="block w-full p-2 bg-gray-700 border border-gray-600 rounded text-white"
                 >
-                  <option value="black">Black</option>
-                  <option value="white">White</option>
+                  <option value="black">Black and White</option>
+                  <option value="white">Color</option>
                 </select>
               </div>
               <div className="mb-4">
                 <label className="block text-sm mb-1">Sides</label>
                 <select
                   name="paperSize"
-                  value={printOptions.sides}
+                  defaultValue={printOptions.sides}
                   onChange={handlePrintOptionsChange}
                   className="block w-full p-2 bg-gray-700 border border-gray-600 rounded text-white"
                 >
@@ -302,7 +302,7 @@ const MessageInput = () => {
                 <input
                   type="number"
                   name="copies"
-                  value={printOptions.copies}
+                  defaultValue={printOptions.copies}
                   min="1"
                   onChange={handlePrintOptionsChange}
                   className="block w-full p-2 bg-gray-700 border border-gray-600 rounded text-white"
