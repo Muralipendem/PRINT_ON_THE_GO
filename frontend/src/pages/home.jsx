@@ -1,7 +1,5 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import bgImage from '/bgImage.jpg';
-
 
 const Home = () => {
     const history = useNavigate();
@@ -11,9 +9,7 @@ const Home = () => {
     };
 
     return (
-        <div className="min-h-screen bg-cover bg-center w-[100%]" style={{ backgroundImage: "url(" + bgImage + ")"
-
-         }}>
+        <div className="min-h-screen bg-cover bg-center w-[100%]" style={{ backgroundImage: "url('/public//bgImage.jpg')"}}>
             <nav className="bg-gray-800 p-4">
                 <div className="container mx-auto flex justify-between items-center">
                     <div className="text-white text-lg font-bold">PrintOnGo</div>
