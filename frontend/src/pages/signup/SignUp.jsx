@@ -7,7 +7,7 @@ import useSignup from "../../hooks/useSignup";
 import { OpenStreetMapAutocomplete } from "@amraneze/osm-autocomplete";
 import "./wrapper.css";
 import { set } from "mongoose";
-import bgimage from "../../../public/loginImg.jpeg";
+import bgimage from "/loginImg.jpeg";
 
 const SignUp = () => {
     const [inputs, setInputs] = useState({

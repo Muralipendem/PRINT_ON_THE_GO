@@ -109,7 +109,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import useLogin from "../../hooks/useLogin";
-import bgimage from "../../../public/loginImg.jpeg";
+import bgimage from "/loginImg.jpeg";
 
 const Login = () => {
 	const [username, setUsername] = useState("");

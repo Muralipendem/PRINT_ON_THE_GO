@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import bgImage from '../../public/bgImage.jpg';
+import bgImage from '/bgImage.jpg';
 
 
 const Home = () => {
