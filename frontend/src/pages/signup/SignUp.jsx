@@ -7,7 +7,7 @@ import useSignup from "../../hooks/useSignup";
 import { OpenStreetMapAutocomplete } from "@amraneze/osm-autocomplete";
 import "./wrapper.css";
 import { set } from "mongoose";
-import bgimage from "/loginImg.jpeg";
+import bgimage from "../../assets/loginImg.jpeg";
 
 const SignUp = () => {
     const [inputs, setInputs] = useState({
@@ -134,7 +134,7 @@ const SignUp = () => {
 
     return (
         <div  className="min-h-screen w-full bg-cover bg-center flex items-center justify-center"
-          style={{ backgroundImage: `url('/public/loginImg.jpeg')`,backgroungSize:"cover",backgroundRepeat:"no-repeat",backgroundPosition:"center" }}>
+          style={{ backgroundImage: `url(${bgimage})`,backgroungSize:"cover",backgroundRepeat:"no-repeat",backgroundPosition:"center" }}>
         <div className="flex flex-col bg-white rounded-xl items-center justify-center min-w-96  mx-auto">
             <div className="w-full p-6 rounded-lg  bg-gray-400 h-[90vh] overflow-y-auto no-scrollbar shadow-xl bg-clip-padding backdrop-filter backdrop-blur-lg bg-opacity-0">
                 <h1 className="text-3xl font-semibold text-center text-black">
