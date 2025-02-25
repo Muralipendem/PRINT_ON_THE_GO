@@ -273,7 +273,7 @@ const MessageInput = () => {
                 </select>
               </div>
               <div className="mb-4">
-                <label className="block text-sm mb-1">Color</label>
+                <label className="block text-sm mb-1">Type</label>
                 <select
                   name="color"
                   defaultValue={printOptions.color}

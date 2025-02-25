@@ -109,6 +109,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import useLogin from "../../hooks/useLogin";
+import bgimage from "../../assets/bgimage.webp";
 
 const Login = () => {
 	const [username, setUsername] = useState("");
@@ -122,7 +123,11 @@ const Login = () => {
 	};
 
 	return (
-		<div className='flex flex-col items-center justify-center shadow-xl min-w-96 mx-auto'>
+		<div
+  className="min-h-screen w-full bg-cover bg-center flex items-center justify-center"
+  style={{ backgroundImage: `url(${bgimage})` }}
+>
+		<div className='flex flex-col items-center justify-center shadow-xl min-w-96 mx-auto'  >
 			<div className='w-full p-6 rounded-lg shadow-md bg-white border border-gray-300'>
 				<h1 className='text-3xl font-semibold text-center text-gray-700'>
 					Login
@@ -166,6 +171,7 @@ const Login = () => {
 					</div>
 				</form>
 			</div>
+		</div>
 		</div>
 	);
 };
