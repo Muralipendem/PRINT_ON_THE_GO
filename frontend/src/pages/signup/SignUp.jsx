@@ -7,7 +7,7 @@ import useSignup from "../../hooks/useSignup";
 import { OpenStreetMapAutocomplete } from "@amraneze/osm-autocomplete";
 import "./wrapper.css";
 import { set } from "mongoose";
-import bgimage from "../../assets/bgimage.webp";
+import bgimage from "../../../public/loginImg.jpeg";
 
 const SignUp = () => {
     const [inputs, setInputs] = useState({
@@ -92,16 +92,52 @@ const SignUp = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        const passwordPattern = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
+
+        if(inputs.fullName.length <6){
+            alert("Full Name must be at least 6 characters long");
+            return;
+        }
+
+        if(inputs.username.length <6){
+            alert("Username must be at least 6 characters long");
+            return;
+        }
+
+
+        if(inputs.address === "") {
+            alert("Please enter an address");
+            return;
+        }
+
+        if (!inputs.profilePic) {
+            alert("Please upload a profile picture");
+            return;
+        }
+
+        if(inputs.password !== inputs.confirmPassword){
+            alert("Passwords do not match");
+            return;
+        }
+
+        if (!passwordPattern.test(inputs.password)) {
+            alert("Password must be at least 8 characters long, start with a capital letter, and contain at least one digit and one special character.");
+            return;
+        }
+
+
+        
         console.log(inputs);  // Debug log here
         await signup(inputs);
     };
 
     return (
         <div  className="min-h-screen w-full bg-cover bg-center flex items-center justify-center"
-          style={{ backgroundImage: `url(${bgimage})` }}>
+          style={{ backgroundImage: `url(${bgimage})`,backgroungSize:"cover",backgroundRepeat:"no-repeat",backgroundPosition:"center" }}>
         <div className="flex flex-col bg-white rounded-xl items-center justify-center min-w-96  mx-auto">
             <div className="w-full p-6 rounded-lg  bg-gray-400 h-[90vh] overflow-y-auto no-scrollbar shadow-xl bg-clip-padding backdrop-filter backdrop-blur-lg bg-opacity-0">
-                <h1 className="text-3xl font-semibold text-center text-gray-300">
+                <h1 className="text-3xl font-semibold text-center text-black">
                     Sign Up <span className="text-blue-500"> PrintOnGo</span>
                 </h1>
 

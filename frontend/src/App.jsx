@@ -1,6 +1,6 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import "./App.css";
-import Home from "./pages/home/Home";
+import Home from "./pages/home";
 import Login from "./pages/login/Login";
 import SignUp from "./pages/signup/SignUp";
 import { Toaster } from "react-hot-toast";
@@ -16,6 +16,7 @@ function App() {
   return (
     <div className="h-screen flex items-center bg-white justify-center">
       <Routes>
+      <Route path="/home" element={<Home />} />
         <Route
           path="/"
           element={
@@ -25,10 +26,12 @@ function App() {
                  
               </>
             ) : (
-              <Navigate to={"/login"} />
+              <Navigate to={"/home"} />
             )
           }
         />
+
+       
        
         <Route
           path="/login"
