@@ -15,7 +15,7 @@ const Home = () => {
             {/* Navbar */}
             <nav className="bg-gray-800 p-4 w-full fixed top-0 left-0">
                 <div className="w-full flex justify-between items-center px-6">
-                    <h1 className="text-5xl font-extrabold text-white tracking-wide uppercase bg-gradient-to-r from-red-500 to-green-400 text-transparent bg-clip-text">
+                    <h1 className="text-5xl font-extrabold  tracking-wide uppercase bg-gradient-to-r from-red-500 to-green-400 text-transparent bg-clip-text">
                         Welcome To Print-On-The-Go
                     </h1>
                     <button 
