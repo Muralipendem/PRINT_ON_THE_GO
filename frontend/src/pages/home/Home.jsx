@@ -3,7 +3,7 @@ import MessageContainer from "../../components/messages/MessageContainer";
 import Sidebar from "../../components/sidebar/Sidebar";
 import useConversation from "../../zustand/useConversation";
 
-const Home = () => {
+const MessagesHome = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false); // State for sidebar open/close
   const [isMobile, setIsMobile] = useState(false); // State to check if it's mobile view
   const { selectedConversation, setSelectedConversation } = useConversation();
@@ -141,4 +141,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default MessagesHome;

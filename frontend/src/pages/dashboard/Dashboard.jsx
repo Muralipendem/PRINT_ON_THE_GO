@@ -114,7 +114,7 @@ const Dashboard = () => {
                     <>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 h-[80vh] py-5 px-5 w-full overflow-auto">
                 {orders.map((order) => (
-                    <div key={order._id} className={`bg-white shadow-md rounded-lg p-4  no-scrollbar overflow-auto ${orders.length <= 2 ? "max-h-[300px]" : "min-h-[30vh]"}`}>
+                    <div key={order._id} className={`bg-white shadow-md rounded-lg p-4   no-scrollbar overflow-auto ${orders.length <= 2 ? "max-h-[300px]" : "min-h-[30vh]"}`}>
                         <div className="flex items-center mb-4">
                             {authUser.role === "user" ? <img src={order.shopPic} alt="shop" className="w-12 h-12 rounded-full mr-4" /> : <img src={order.userPic} alt="user" className="w-12 h-12 rounded-full mr-4" />}
                             <div>
@@ -122,10 +122,18 @@ const Dashboard = () => {
                                 <p className="text-gray-500">{new Date(order.orderDate).toLocaleDateString()}</p>
                             </div>
                         </div>
-                        <div className="mb-4">
-                            <div className='flex justify-between gap-5 items-center'>
-                                <p className="text-gray-700">Status: <span className={`${order.status === "pending" ? "text-yellow-500" : order.status === "completed" ? "text-green-500" : "text-red-500"}`}>{order.status}</span> </p>
-                                {
+                        <div className="mb-2 flex justify-between">
+                               <div className='flex flex-col justify-between'>
+                               <p className="text-gray-700">Status: <span className={`${order.status === "pending" ? "text-yellow-500" : order.status === "completed" ? "text-green-500" : "text-red-500"}`}>{order.status}</span> </p>
+                               
+                                   
+                               <p className="text-gray-700">Quantity: {order.quantity}</p>
+                               <p className="text-gray-700">Type: {order.color === "white" ? "color" : order.color === "black" ? "Black & White" : "Not Mentioned"}</p>
+                               <p className="text-gray-700">Sides: {order.sides ?? "Not-Mentioned"}</p>
+                               </div>
+
+                            <div className='flex flex-col gap-2'>
+                            {
                                          order.status === "pending" && <>
                                         {authUser.role === "shop" ? <a href={`/chat?id=${order.userId}`} className='bg-blue-500 h-fit py-2 px-3 rounded-xl font-semibold text-white cursor-pointer whitespace-nowrap text-sm' > Chat with User
                                             </a> : <a href={`/chat?id=${order.shopId}`} className='bg-blue-500 h-fit py-2 px-3 rounded-xl font-semibold text-white cursor-pointer whitespace-nowrap text-sm' > Chat with Shop
@@ -134,14 +142,10 @@ const Dashboard = () => {
                                     }
                                 {(order.status === "pending") &&
                                     <>
-                                        {authUser.role == "user" ? <p  onClick={() => UpdateOrder(order._id, "cancelled", order.pdfId, order.shopId)} className='whitespace-nowrap text-white md:text-sm text-xs bg-red-500 px-5 py-3 rounded-xl cursor-pointer'>Cancel Order</p> : <p  onClick={() => UpdateOrder(order._id, "completed", order.pdfId, order.userId)} className="whitespace-nowrap bg-green-500 px-5 py-3 rounded-xl text-white md:text-sm text-xs cursor-pointer">Complete Order</p>}
-                                        {authUser.role === "shop" && <p  onClick={() => UpdateOrder(order._id, "rejected", order.pdfId, order.userId)} className='whitespace-nowrap text-white md:text-sm text-xs bg-red-500 px-5 py-3 rounded-xl cursor-pointer'>Reject Order</p>}
+                                        {authUser.role == "user" ? <p  onClick={() => UpdateOrder(order._id, "cancelled", order.pdfId, order.shopId)} className='whitespace-nowrap text-white md:text-sm text-xs bg-red-500 px-5 py-2 rounded-xl cursor-pointer'>Cancel Order</p> : <p  onClick={() => UpdateOrder(order._id, "completed", order.pdfId, order.userId)} className="whitespace-nowrap bg-green-500 px-5 py-2 rounded-xl text-white md:text-sm text-xs cursor-pointer">Complete Order</p>}
+                                        {authUser.role === "shop" && <p  onClick={() => UpdateOrder(order._id, "rejected", order.pdfId, order.userId)} className='whitespace-nowrap text-white md:text-sm text-xs bg-red-500 px-5 py-2 rounded-xl cursor-pointer'>Reject Order</p>}
                                     </>}
-                                   
                             </div>
-                            <p className="text-gray-700">Quantity: {order.quantity}</p>
-                            <p className="text-gray-700">Type: {order.color === "white" ? "color" : order.color === "black" ? "Black & White" : "Not Mentioned"}</p>
-                            <p className="text-gray-700">Sides: {order.sides ?? "Not-Mentioned"}</p>
                         </div>
                         <div>
                             {/* <a href={order.pdfId[0]} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
@@ -154,7 +158,7 @@ const Dashboard = () => {
                                         <a key={index} href={pdf} target="_blank" rel="noopener noreferrer" className="whitespace-nowrap text-blue-500 hover:underline block">
                                             View Document {index + 1}
                                         </a>
-                                        {authUser.role === "shop" && <p className='hover:underline hover:text-blue-500 text-black cursor-pointer'>Print</p>}
+                                        {authUser.role === "shop" && <a target="_blank" href={pdf} className='hover:underline hover:text-blue-500 text-black cursor-pointer'>Print</a>}
                                     </div> : null
                                     }
                                 </>

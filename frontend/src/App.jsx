@@ -10,6 +10,7 @@ import { Orders } from "./pages/home/orders";
 import MaplibreUe from "./pages/home/map";
 import MaplibreComponent from "./pages/home/map";
 import Dashboard from "./pages/dashboard/Dashboard";
+import MessagesHome from "./pages/home/Home";
 
 function App() {
   const { authUser } = useAuthContext();
@@ -53,7 +54,7 @@ function App() {
           path="/"
           element={authUser ? <Dashboard /> : <Navigate to="/" />}
         />
-        <Route path="/chat" element={<Home />} />
+        <Route path="/chat" element={<MessagesHome />} />
       </Routes>
       <Toaster />
     </div>
