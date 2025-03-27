@@ -27,7 +27,7 @@ app.use("/api/files", fileRoutes); // Registering the new file routes
 app.use(express.static(path.join(__dirname, "/frontend/dist")));
 
 app.get("*", (req, res) => {
-	res.sendFile(path.join(__dirname, "frontend", "dist", "index.html"));
+	res.sendFile(path.resolve(__dirname, "frontend", "dist", "index.html"));
 });
 
 server.listen(PORT, () => {
